@@ -1,4 +1,5 @@
 "use client";
+import { Editor } from "@tinymce/tinymce-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -14,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { QuestionsSchema } from "@/lib/validation";
+import { useRef } from "react";
 
 const Question = () => {
+  const editorRef = useRef(null);
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof QuestionsSchema>>({
     resolver: zodResolver(QuestionsSchema),
@@ -72,9 +76,33 @@ const Question = () => {
               </FormLabel>
               <FormControl className="mt-3.5">
                 {/* Todo editor components */}
+                <Editor
+                  apiKey={process.env.NEXT_PUBLIC_TINY_EDITOR_aPI_KEY}
+                  onInit={(evt, editor) => {
+                    // @ts-ignore
+                    editorRef.current = editor;
+                  }}
+                  initialValue="<p>This is the initial content of the editor.</p>"
+                  init={{
+                    height: 350,
+                    menubar: false,
+                    plugins: [
+                      "advlist autolink lists link image charmap print preview anchor",
+                      "searchreplace visualblocks code fullscreen",
+                      "insertdatetime media table paste code help wordcount",
+                    ],
+                    toolbar:
+                      "undo redo | formatselect | " +
+                      "bold italic backcolor | alignleft aligncenter " +
+                      "alignright alignjustify | bullist numlist outdent indent | " +
+                      "removeformat | help",
+                    content_style:
+                      "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
+                  }}
+                />
               </FormControl>
               <FormDescription className="body-regular mt-2.5 text-light-500">
-                BIntroduce the problem and expand on what you put in the
+                Introduce the problem and expand on what you put in the
                 title.Minimize 20 characters
               </FormDescription>
               <FormMessage className="text-red-500" />
